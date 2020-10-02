@@ -1,9 +1,23 @@
-import test_file as example
-import sys
-# sys.path.append('/path/to/application/app/folder')
-# from .project.steven import start
-# from project import steven
+import gc
 
+
+print("Free mem 0A: %s" % gc.mem_free())
+
+def check_for_updates():
+	from ota_updater.ota_main import OTAUpdate
+	
+	git_url = 'https://github.com/prowebber/micropy_ota'
+	wifi_ssid = 'magiceye'
+	wifi_pass = 'magiceye'
+	
+	print("Free mem 2A: %s" % gc.mem_free())
+	
+	o = OTAUpdate(git_url)  # Init OTA
+	o.using_network(wifi_ssid, wifi_pass)  # Connect to WiFi
+	
+	print("Free mem 3A: %s" % gc.mem_free())
+	
+	o.check_for_update_to_install_during_next_reboot()  # Check for pending updates
 
 
 def working():
@@ -20,6 +34,13 @@ def working():
 	s.connect((ip_address, 443))
 	s = ussl.wrap_socket(s, server_hostname='dog-learn.com')
 	print(s)
+
+
+def test():
+	# import move_files  # Remove after sub directories are not being modified
+	print("Free mem 1A: %s" % gc.mem_free())
+	gc.enable()  # Enable automatic garbage collection
+	check_for_updates()
 
 
 # on_boot()  # Start the script

@@ -46,6 +46,25 @@ class OTAUpdate:
 				versionfile.write(latest_version)
 				versionfile.close()
 	
+	def download_and_install_update_if_available(self, ssid, password):
+		if 'next' in os.listdir(self.module):
+			if '.version_on_reboot' in os.listdir(self.modulepath('next')):
+				latest_version = self.get_version(self.modulepath('next'), '.version_on_reboot')
+				print('New update found: ', latest_version)
+				self._download_and_install_update(latest_version, ssid, password)
+		else:
+			print('No new updates found...')
+	
+	def _download_and_install_update(self, latest_version, ssid, password):
+		OTAUpdate.using_network(ssid, password)
+		
+		self.download_all_files(self.github_repo + '/contents/' + self.main_dir, latest_version)
+		self.rmtree(self.modulepath(self.main_dir))
+		os.rename(self.modulepath('next/.version_on_reboot'), self.modulepath('next/.version'))
+		os.rename(self.modulepath('next'), self.modulepath(self.main_dir))
+		print('Update installed (', latest_version, '), will reboot now')
+		machine.reset()
+	
 	def apply_pending_updates_if_available(self):
 		if 'next' in os.listdir(self.module):
 			if '.version' in os.listdir(self.modulepath('next')):
@@ -101,7 +120,6 @@ class OTAUpdate:
 	def get_latest_version(self):
 		print("Getting latest release for: %s" % self.github_repo)
 		latest_release = self.http_client.get(self.github_repo + '/releases/latest')
-		print(latest_release.json())
 		print(latest_release)
 		print('current step')
 		version = latest_release.json()['tag_name']
