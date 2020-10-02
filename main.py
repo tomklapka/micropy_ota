@@ -1,29 +1,25 @@
-from ota_updater.ota_main import OTAUpdate
+import test_file as example
+import sys
+# sys.path.append('/path/to/application/app/folder')
+# from .project.steven import start
+# from project import steven
 
 
-def check_for_updates():
-	git_url = 'https://github.com/prowebber/micropy_ota'
-	wifi_ssid = 'magiceye'
-	wifi_pass = 'magiceye'
+
+def working():
+	import ussl
+	import usocket
+	
+	s = usocket.socket()
+	
+	# Get the {IP}{port} of the address in a tuple
+	address_tuple = usocket.getaddrinfo('www.dog-learn.com', 80)[0][-1]
+	ip_address = address_tuple[0]
+	print(address_tuple[0])
+	
+	s.connect((ip_address, 443))
+	s = ussl.wrap_socket(s, server_hostname='dog-learn.com')
+	print(s)
 
 
-	o = OTAUpdate(git_url)
-	o.download_and_install_update_if_available(wifi_ssid, wifi_pass)
-
-
-def start():
-	print("Starting script...")
-	from project.main import start
-	start()
-
-
-def on_boot():
-	"""
-	Called first
-	"""
-	check_for_updates()  # Check for any pending updates
-	start()  # Start the script
-	print("here")
-
-
-on_boot()  # Start the script
+# on_boot()  # Start the script

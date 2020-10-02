@@ -2,6 +2,7 @@ import machine
 import os
 import gc
 import usocket
+from utime import sleep_ms
 
 
 class OTAUpdate:
@@ -32,12 +33,13 @@ class OTAUpdate:
 		print('network config:', sta_if.ifconfig())
 	
 	def check_for_update_to_install_during_next_reboot(self):
-		current_version = self.get_version(self.modulepath(self.main_dir))
-		latest_version = self.get_latest_version()
-		
 		print('Checking version... ')
+		current_version = self.get_version(self.modulepath(self.main_dir))
 		print('\tCurrent version: ', current_version)
+		latest_version = self.get_latest_version()
 		print('\tLatest version: ', latest_version)
+		return
+		
 		if latest_version > current_version:
 			print('New version available, will download and install on next reboot')
 			os.mkdir(self.modulepath('next'))
@@ -79,7 +81,9 @@ class OTAUpdate:
 			print('No pending update found')
 	
 	def download_updates_if_available(self):
+		print("Download updates")
 		current_version = self.get_version(self.modulepath(self.main_dir))
+		print("Current Version: %s" % current_version)
 		latest_version = self.get_latest_version()
 		
 		print('Checking version... ')
@@ -115,7 +119,11 @@ class OTAUpdate:
 		return '0.0'
 	
 	def get_latest_version(self):
+		print("Getting latest release for: %s" % self.github_repo)
 		latest_release = self.http_client.get(self.github_repo + '/releases/latest')
+		print(latest_release)
+		print('current step')
+		return
 		version = latest_release.json()['tag_name']
 		latest_release.close()
 		return version
@@ -184,76 +192,97 @@ class Response:
 class HttpClient:
 	
 	def request(self, method, url, data=None, json=None, headers={}, stream=None):
+		print("request a")
 		try:
 			proto, dummy, host, path = url.split('/', 3)
 		except ValueError:
+			print("request b")
 			proto, dummy, host = url.split('/', 2)
 			path = ''
 		if proto == 'http:':
+			print("request c")
 			port = 80
 		elif proto == 'https:':
+			print("request d")
 			import ussl
+			import ssl
 			port = 443
 		else:
+			print("request e")
 			raise ValueError('Unsupported protocol: ' + proto)
 		
 		if ':' in host:
+			print("request f")
 			host, port = host.split(':', 1)
 			port = int(port)
 		
+		print("request g")
 		ai = usocket.getaddrinfo(host, port, 0, usocket.SOCK_STREAM)
 		ai = ai[0]
+		print("request h")
 		
 		s = usocket.socket(ai[0], ai[1], ai[2])
-		try:
-			s.connect(ai[-1])
-			if proto == 'https:':
-				s = ussl.wrap_socket(s, server_hostname=host)
-			s.write(b'%s /%s HTTP/1.0\r\n' % (method, path))
-			if not 'Host' in headers:
-				s.write(b'Host: %s\r\n' % host)
-			# Iterate over keys to avoid tuple alloc
-			for k in headers:
-				s.write(k)
-				s.write(b': ')
-				s.write(headers[k])
-				s.write(b'\r\n')
-			# add user agent
-			s.write('User-Agent')
+		print("request i")
+
+		s.connect(ai[-1])
+		print("request j")
+		if proto == 'https:':
+			print("request k: %s" % host)
+			# s = ussl.wrap_socket(s, server_hostname=host)
+			# s = ussl.wrap_socket(s)
+			# ss = ussl.wrap_socket(s, server_hostname=host)
+			s = ussl.wrap_socket(s)
+			print("request k-1")
+		print("request l")
+		s.write(b'%s /%s HTTP/1.0\r\n' % (method, path))
+		print("request m")
+		if not 'Host' in headers:
+			print("request n")
+			s.write(b'Host: %s\r\n' % host)
+		# Iterate over keys to avoid tuple alloc
+		for k in headers:
+			s.write(k)
 			s.write(b': ')
-			s.write('MicroPython OTAUpdater')
+			s.write(headers[k])
 			s.write(b'\r\n')
-			if json is not None:
-				assert data is None
-				import ujson
-				data = ujson.dumps(json)
-				s.write(b'Content-Type: application/json\r\n')
-			if data:
-				s.write(b'Content-Length: %d\r\n' % len(data))
-			s.write(b'\r\n')
-			if data:
-				s.write(data)
-			
+		print("request o")
+		# add user agent
+		s.write('User-Agent')
+		s.write(b': ')
+		s.write('MicroPython OTAUpdater')
+		s.write(b'\r\n')
+		if json is not None:
+			assert data is None
+			import ujson
+			data = ujson.dumps(json)
+			s.write(b'Content-Type: application/json\r\n')
+		if data:
+			s.write(b'Content-Length: %d\r\n' % len(data))
+		s.write(b'\r\n')
+		if data:
+			s.write(data)
+		
+		l = s.readline()
+		# print(l)
+		l = l.split(None, 2)
+		status = int(l[1])
+		reason = ''
+		if len(l) > 2:
+			reason = l[2].rstrip()
+		while True:
 			l = s.readline()
+			if not l or l == b'\r\n':
+				break
 			# print(l)
-			l = l.split(None, 2)
-			status = int(l[1])
-			reason = ''
-			if len(l) > 2:
-				reason = l[2].rstrip()
-			while True:
-				l = s.readline()
-				if not l or l == b'\r\n':
-					break
-				# print(l)
-				if l.startswith(b'Transfer-Encoding:'):
-					if b'chunked' in l:
-						raise ValueError('Unsupported ' + l)
-				elif l.startswith(b'Location:') and not 200 <= status <= 299:
-					raise NotImplementedError('Redirects not yet supported')
-		except OSError:
-			s.close()
-			raise
+			if l.startswith(b'Transfer-Encoding:'):
+				if b'chunked' in l:
+					raise ValueError('Unsupported ' + l)
+			elif l.startswith(b'Location:') and not 200 <= status <= 299:
+				raise NotImplementedError('Redirects not yet supported')
+		
+		
+		print('Final Wait 3 seconds...')
+		sleep_ms(3000)
 		
 		resp = Response(s)
 		resp.status_code = status
