@@ -20,6 +20,24 @@ def check_for_updates():
 	o.check_for_update_to_install_during_next_reboot()  # Check for pending updates
 
 
+def install_updates():
+	from ota_updater.ota_download import OTADownload
+	
+	print("Free mem 5A: %s" % gc.mem_free())
+	
+	git_url = 'https://github.com/prowebber/micropy_ota'
+	wifi_ssid = 'magiceye'
+	wifi_pass = 'magiceye'
+	
+	o = OTADownload(git_url)  # Init OTA
+	o.using_network(wifi_ssid, wifi_pass)  # Connect to WiFi
+	
+	print("Free mem 6A: %s" % gc.mem_free())
+	
+	o.start()
+
+
+
 def working():
 	import ussl
 	import usocket
@@ -37,10 +55,10 @@ def working():
 
 
 def test():
-	# import move_files  # Remove after sub directories are not being modified
 	print("Free mem 1A: %s" % gc.mem_free())
 	gc.enable()  # Enable automatic garbage collection
-	check_for_updates()
+	# check_for_updates()
+	install_updates()
 
 
 # on_boot()  # Start the script
