@@ -22,8 +22,7 @@ ESP8622.
 
 ## Usage
 
-**Important Params**
-
+#### Helpful Params
 | Param        | Description                                                      |
 |:-------------|:-----------------------------------------------------------------|
 | `main_dir`   | The directory containing the code you want auto-updated          |
@@ -31,11 +30,20 @@ ESP8622.
 | `wifi_pass`  | The WiFi network pass                                            |
 | `github_url` | The URL to the GitHub repository the updates are downloaded from |
 
+### TLDR Usage
+1. Specify the Params (see [Setup & Prerequisites section](#setup--prerequisites))
+2. Call `check_for_updates()` in `main.py` to check for new updates
+3. Call `install_updates()` in `main.py` to download and install updates
+4. Reboot the device
 
-### Setup & Prerequisites
+
+
+
+## Setup & Prerequisites
 Make sure these steps are completed before you run the OTA.
 
-#### Set Credentials
+
+### Set Credentials
 Specify the required credentials including:
    * WiFi SSID & password
    * GitHub repo to update from
@@ -50,7 +58,7 @@ The GitHub repo needs to be set to the repository the updates will be downloaded
 repository must have the `main_dir` specified above as that is the data that will be downloaded.
 
 
-#### Use Tags to Specify the Latest Release
+### Use Tags to Specify the Latest Release
 You must specify a 'latest' version in GitHub.  The code will query GitHub for the latest
 repo release and if the release is newer than what is installed it will download the update.
 
@@ -67,13 +75,10 @@ You must use semantic versioning for this (e.g. `1.0.0`).  Below is a quick revi
 You can view the current version with `git describe`.
 
 
-### Step 1) Check for Updates
-You will need to determine when you want to check for updates (for example after boot).
+## Logic
+Below is how the script works.
 
-Feel free to use the `check_for_updates()` function in `main.py` to check for updates.
-Remember the device must be connected to WiFi at this point for it to work.
-
-#### Checking for Updates Logic
+### Checking for Updates
 1. Call the `OTACheck` class and pass in the following arguments
    * 'github_url' - This the URL to the repository you want to download updates from
    * 'main_dir' - This is the directory that contains the updated code
@@ -81,12 +86,6 @@ Remember the device must be connected to WiFi at this point for it to work.
 3. If the version is newer than what is on the device
    * Create a `/next/` directory and save the newest version ID in `/next/.version_on_reboot`
 4. Exit OTA
-
-### Step 2) Download & Install Updates
-You will need to determine when to install available updates.  The device must be connected to
-WiFi for the download and install process.
-
-You can use the `install_updates()` function in `main.py` to see this work.
 
 #### Download & Install Logic
 1. Check to see if a `/next/.version_on_reboot` file exists
