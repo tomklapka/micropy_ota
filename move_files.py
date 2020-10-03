@@ -8,6 +8,7 @@ file_list = {
 	},
 	'move': {
 		'ota_updater\\__init__.py': 'ota_updater/__init__.py',
+		'ota_updater\\ota_check.py': 'ota_updater/ota_check.py',
 		'ota_updater\\ota_download.py': 'ota_updater/ota_download.py',
 		'ota_updater\\ota_main.py': 'ota_updater/ota_main.py',
 		'ota_updater\\static.py': 'ota_updater/static.py',

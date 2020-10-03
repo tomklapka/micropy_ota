@@ -4,6 +4,13 @@
 * Works for MicroPython v1.13
 * Only updates scripts in the directory specified (e.g. `/project`)
 
+### ToDo
+* Be able to revert to the previous version
+* Be able to download a specific version
+* Failsafes
+  * If no version exists - download the last stable version
+  * If the device powers off mid update, revert to previous
+
 ## How it Works
 
 **Important Params**

@@ -1,7 +1,6 @@
 from ota_updater.static import HttpClient
 import os
 import gc
-import ujson
 
 class OTADownload:
 	def __init__(self, github_repo, module='', main_dir='project'):
@@ -54,22 +53,58 @@ class OTADownload:
 		os.rmdir(directory)
 	
 	def download_all_files(self, root_url, version):
-		print("Downloading: %s" % root_url)
+		print("\t----- Downloading: %s" % root_url)
 		print("Free mem 8A: %s" % gc.mem_free())
 		
 		file_list = self.http_client.get(root_url + '?ref=refs/tags/' + version, dtype='json')
+		print(file_list)
 		gc.collect()
-		print("Free mem 8B: %s" % gc.mem_free())
+		
+		# Create a much smaller version of the file dict
+		file_params = {
+			'file': [],
+			'dir': []
+		}
 		for file in file_list:
-			if file['type'] == 'file':
-				download_url = file['download_url']
-				download_path = self.modulepath('next/' + file['path'].replace(self.main_dir + '/', ''))
-				self.download_file(download_url.replace('refs/tags/', ''), download_path)
-			elif file['type'] == 'dir':
-				path = self.modulepath('next/' + file['path'].replace(self.main_dir + '/', ''))
-				os.mkdir(path)
-				self.download_all_files(root_url + '/' + file['name'], version)
+			file_type = file['type']
+			
+			file_params[file_type].append({
+				'download_url': file['download_url'],
+				'path': file['path'],
+				'name': file['name'] if 'name' in file else None
+			})
+			
+		del file_list  # Reset/erase data
+		print(file_params)
 		gc.collect()
+		
+		print("Free mem 8B: %s" % gc.mem_free())
+		
+		for file_type in file_params:  # Loop through each file type
+			for file in file_params[file_type]:  # Loop through each file
+				download_url = file['download_url']
+				file_path = file['path']
+				file_name = file['name']
+				
+				if file_type == 'file':
+					download_path = self.modulepath('next/' + file_path.replace(self.main_dir + '/', ''))
+					self.download_file(download_url.replace('refs/tags/', ''), download_path)
+				elif file_type == 'dir':
+					path = self.modulepath('next/' + file_path.replace(self.main_dir + '/', ''))
+					os.mkdir(path)
+					self.download_all_files(root_url + '/' + file_name, version)
+			gc.collect()
+		
+		# for file in file_list:
+		# 	if file['type'] == 'file':
+		# 		download_url = file['download_url']
+		# 		download_path = self.modulepath('next/' + file['path'].replace(self.main_dir + '/', ''))
+		# 		self.download_file(download_url.replace('refs/tags/', ''), download_path)
+		# 	elif file['type'] == 'dir':
+		# 		path = self.modulepath('next/' + file['path'].replace(self.main_dir + '/', ''))
+		# 		os.mkdir(path)
+		# 		self.download_all_files(root_url + '/' + file['name'], version)
+		# 	gc.collect()
 	
 	def download_file(self, url, path):
 		print('\t----- Downloading: ', path)

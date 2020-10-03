@@ -4,7 +4,8 @@ import gc
 print("Free mem 0A: %s" % gc.mem_free())
 
 def check_for_updates():
-	from ota_updater.ota_main import OTAUpdate
+	# from ota_updater.ota_main import OTAUpdate
+	from ota_updater.ota_check import OTACheck
 	
 	git_url = 'https://github.com/prowebber/micropy_ota'
 	wifi_ssid = 'magiceye'
@@ -12,12 +13,12 @@ def check_for_updates():
 	
 	print("Free mem 2A: %s" % gc.mem_free())
 	
-	o = OTAUpdate(git_url)  # Init OTA
+	o = OTACheck(git_url)  # Init OTA
 	o.using_network(wifi_ssid, wifi_pass)  # Connect to WiFi
 	
 	print("Free mem 3A: %s" % gc.mem_free())
 	
-	o.check_for_update_to_install_during_next_reboot()  # Check for pending updates
+	o.start()  # Check for pending updates
 
 
 def install_updates():
