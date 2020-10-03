@@ -1,6 +1,6 @@
 import gc
 from ota_updater.wifi_conn import connect_to_wifi
-
+from machine import reboot
 # Creds
 main_dir = 'project'
 wifi_ssid = 'magiceye'
