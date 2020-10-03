@@ -2,9 +2,9 @@
 This is a modified version of [micropython-ota-updater](https://github.com/rdehuyss/micropython-ota-updater) to
 work with MicroPython v1.13 and devices with lower memory.
 
-I wrote this for the ESP8622, but it should definitely work
+I wrote this for the ESP8266, but it should definitely work
 with the ESP32 or any chips with RAM equal to or greater than the
-ESP8622.
+ESP8266.
 
 
 ### Features
