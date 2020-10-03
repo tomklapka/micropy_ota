@@ -3,6 +3,7 @@ import uos
 # Specify what files need to be moved/deleted
 file_list = {
 	'delete': {
+		'ota_updater/ota_main.py': None,
 		'project/my_file.txt': None,
 		'test_file.py': None,
 	},
@@ -10,8 +11,8 @@ file_list = {
 		'ota_updater\\__init__.py': 'ota_updater/__init__.py',
 		'ota_updater\\ota_check.py': 'ota_updater/ota_check.py',
 		'ota_updater\\ota_download.py': 'ota_updater/ota_download.py',
-		'ota_updater\\ota_main.py': 'ota_updater/ota_main.py',
 		'ota_updater\\static.py': 'ota_updater/static.py',
+		'ota_updater\\wifi_conn.py': 'ota_updater/wifi_conn.py',
 		'project\\__init__.py': 'project/__init__.py',
 		'project\\steven.py': 'project/steven.py'
 	},

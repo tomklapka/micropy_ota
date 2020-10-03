@@ -1,4 +1,11 @@
 # MicroPython OTA Update
+This is a modified version of [micropython-ota-updater](https://github.com/rdehuyss/micropython-ota-updater) to
+work with MicroPython v1.13 and devices with lower memory.
+
+I wrote this for the ESP8622, but it should definitely work
+with the ESP32 or any chips with RAM equal to or greater than the
+ESP8622.
+
 
 ### Features
 * Works for MicroPython v1.13
@@ -10,6 +17,15 @@
 * Failsafes
   * If no version exists - download the last stable version
   * If the device powers off mid update, revert to previous
+
+
+## Usage
+1. Specify the correct creds including:
+   * WiFi SSID & password
+   * GitHub repo to update from
+2. Use Tags to specify which push is the 'latest' version
+3. Run the equivalent code that's in `main.test()`
+
 
 ## How it Works
 
@@ -41,6 +57,7 @@
 ## Debugging
 
 ### Re-test Download | REPL
+Run the following to un-do the download.
 
 ```python
 import os

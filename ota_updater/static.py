@@ -1,10 +1,8 @@
 import usocket
 import gc
-from utime import sleep_ms
 
 
 class Response:
-	
 	def __init__(self, f):
 		self.raw = f
 		self.encoding = 'utf-8'
@@ -62,33 +60,21 @@ class HttpClient:
 		ai = usocket.getaddrinfo(host, port, 0, usocket.SOCK_STREAM)
 		ai = ai[0]
 		
-		ai_family = ai[0]
-		ai_type = ai[1]
-		ai_proto = ai[2]
-		ai_ip = ai[4][0]
-		ai_port = ai[4][1]
-		
 		s = usocket.socket(ai[0], ai[1], ai[2])
-		print("Free mem 4A: %s" % gc.mem_free())
-		
 		s.connect(ai[-1])
 		if proto == 'https:':
-			print("request k: %s" % host)
 			s = ussl.wrap_socket(s, server_hostname=host)
-			print("request k-1")
-		print("request l")
 		s.write(b'%s /%s HTTP/1.0\r\n' % (method, path))
-		print("request m")
 		if not 'Host' in headers:
-			print("request n")
 			s.write(b'Host: %s\r\n' % host)
+
 		# Iterate over keys to avoid tuple alloc
 		for k in headers:
 			s.write(k)
 			s.write(b': ')
 			s.write(headers[k])
 			s.write(b'\r\n')
-		print("request o")
+
 		# add user agent
 		s.write('User-Agent')
 		s.write(b': ')
@@ -106,7 +92,6 @@ class HttpClient:
 			s.write(data)
 		
 		l = s.readline()
-		# print(l)
 		l = l.split(None, 2)
 		status = int(l[1])
 		reason = ''
@@ -116,16 +101,11 @@ class HttpClient:
 			l = s.readline()
 			if not l or l == b'\r\n':
 				break
-			# print(l)
 			if l.startswith(b'Transfer-Encoding:'):
 				if b'chunked' in l:
 					raise ValueError('Unsupported ' + l)
 			elif l.startswith(b'Location:') and not 200 <= status <= 299:
 				raise NotImplementedError('Redirects not yet supported')
-		
-		
-		print('Final Wait 3 seconds...')
-		sleep_ms(3000)
 		
 		resp = Response(s)
 		resp.status_code = status
@@ -135,16 +115,14 @@ class HttpClient:
 			data = resp.json()
 			resp.close()
 			gc.collect()
-			# s.close()
 			return data
 		elif dtype == 'text':
 			data = resp.text
 			resp.close()
 			gc.collect()
 			return data
-		
-		# s.close()
-		return resp
+		else:
+			return resp
 	
 	def head(self, url, **kw):
 		return self.request('HEAD', url, **kw)

@@ -1,6 +1,6 @@
 from ota_updater.static import HttpClient
 import os
-import gc
+
 
 class OTACheck:
 	def __init__(self, github_repo, module='', main_dir='project'):
@@ -26,8 +26,6 @@ class OTACheck:
 				versionfile.write(latest_version)
 				versionfile.close()
 		
-		
-		
 	def get_version(self, directory, version_file_name='.version'):
 		if version_file_name in os.listdir(directory):
 			f = open(directory + '/' + version_file_name)
@@ -46,17 +44,5 @@ class OTACheck:
 		version = latest_release['tag_name']
 		return version
 	
-	@staticmethod
-	def using_network(ssid, password):
-		import network
-		sta_if = network.WLAN(network.STA_IF)
-		if not sta_if.isconnected():
-			print('connecting to network...')
-			sta_if.active(True)
-			sta_if.connect(ssid, password)
-			while not sta_if.isconnected():
-				pass
-		print('network config:', sta_if.ifconfig())
-		
 	def modulepath(self, path):
 		return self.module + '/' + path if self.module else path

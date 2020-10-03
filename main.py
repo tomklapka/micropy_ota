@@ -1,65 +1,42 @@
-import gc
 
-
-print("Free mem 0A: %s" % gc.mem_free())
-
-def check_for_updates():
-	# from ota_updater.ota_main import OTAUpdate
+def check_for_updates(github_url):
+	"""
+	Check for any new updates posted to GitHub
+	"""
 	from ota_updater.ota_check import OTACheck
 	
-	git_url = 'https://github.com/prowebber/micropy_ota'
-	wifi_ssid = 'magiceye'
-	wifi_pass = 'magiceye'
-	
-	print("Free mem 2A: %s" % gc.mem_free())
-	
-	o = OTACheck(git_url)  # Init OTA
-	o.using_network(wifi_ssid, wifi_pass)  # Connect to WiFi
-	
-	print("Free mem 3A: %s" % gc.mem_free())
-	
+	o = OTACheck(github_url)  # Init OTA
 	o.start()  # Check for pending updates
 
 
-def install_updates():
+def install_updates(github_url):
+	"""
+	Download an replace existing files with updated files
+	"""
 	from ota_updater.ota_download import OTADownload
 	
-	print("Free mem 5A: %s" % gc.mem_free())
-	
-	git_url = 'https://github.com/prowebber/micropy_ota'
-	wifi_ssid = 'magiceye'
-	wifi_pass = 'magiceye'
-	
-	o = OTADownload(git_url)  # Init OTA
-	o.using_network(wifi_ssid, wifi_pass)  # Connect to WiFi
-	
-	print("Free mem 6A: %s" % gc.mem_free())
-	
+	o = OTADownload(github_url)  # Init OTA
 	o.start()
 
 
-
-def working():
-	import ussl
-	import usocket
-	
-	s = usocket.socket()
-	
-	# Get the {IP}{port} of the address in a tuple
-	address_tuple = usocket.getaddrinfo('www.dog-learn.com', 80)[0][-1]
-	ip_address = address_tuple[0]
-	print(address_tuple[0])
-	
-	s.connect((ip_address, 443))
-	s = ussl.wrap_socket(s, server_hostname='dog-learn.com')
-	print(s)
-
-
 def test():
-	print("Free mem 1A: %s" % gc.mem_free())
+	"""
+	Example for OTA
+	- Specify the creds below
+	- Replace the GitHub repository with the one you want to OTA
+	"""
+	import gc
+	from ota_updater.wifi_conn import connect_to_wifi
+	
+	# Creds
+	wifi_ssid = 'magiceye'
+	wifi_pass = 'magiceye'
+	github_url= 'https://github.com/prowebber/micropy_ota'
+	
 	gc.enable()  # Enable automatic garbage collection
-	# check_for_updates()
-	install_updates()
-
-
-# on_boot()  # Start the script
+	
+	# Connect to the WiFI
+	has_wifi = connect_to_wifi(wifi_ssid, wifi_pass)
+	if has_wifi:  # If WiFi is connected
+		check_for_updates(github_url)
+		install_updates(github_url)
