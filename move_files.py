@@ -1,5 +1,5 @@
 import uos
-
+from os import scandir
 """
 Move Files
 - Import this script to move files from the root directory to the desired directory
@@ -14,7 +14,7 @@ file_list = {
 		'project/my_file.txt': None,
 		'test_file.py': None,
 	},
-	
+
 	# Files to move/override
 	'move': {
 		'ota_updater\\__init__.py': 'ota_updater/__init__.py',
@@ -45,7 +45,7 @@ for action in file_list:
 			f.close()
 		except OSError:
 			exists = False
-			
+
 		# Modify the file
 		if exists:
 			if action == 'move':
@@ -54,6 +54,6 @@ for action in file_list:
 			elif action == 'delete':
 				uos.remove(bad_path)
 				files_deleted += 1
-		
+
 print("Files moved: %s" % files_moved)
 print("Files deleted: %s" % files_deleted)

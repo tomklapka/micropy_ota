@@ -1,4 +1,5 @@
+test_str = 'holdaway'
 
 
 def start():
-	print('steven')
+	print(f"steven {test_str}")
