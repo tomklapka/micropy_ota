@@ -1,12 +1,21 @@
 import uos
 
+"""
+Move Files
+- Import this script to move files from the root directory to the desired directory
+- This fixes an issue with PyCharm renaming files inside directories and moving them into root
+"""
+
 # Specify what files need to be moved/deleted
 file_list = {
+	# Files to delete
 	'delete': {
 		'ota_updater/ota_main.py': None,
 		'project/my_file.txt': None,
 		'test_file.py': None,
 	},
+	
+	# Files to move/override
 	'move': {
 		'ota_updater\\__init__.py': 'ota_updater/__init__.py',
 		'ota_updater\\ota_check.py': 'ota_updater/ota_check.py',
