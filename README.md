@@ -25,7 +25,7 @@ ESP8622.
 #### Helpful Params
 | Param        | Description                                                      |
 |:-------------|:-----------------------------------------------------------------|
-| `main_dir`   | The directory containing the code you want auto-updated          |
+| `tgt_dir`    | The directory containing the code you want auto-updated          |
 | `wifi_ssd`   | The WiFi network name                                            |
 | `wifi_pass`  | The WiFi network pass                                            |
 | `github_url` | The URL to the GitHub repository the updates are downloaded from |
@@ -55,7 +55,7 @@ have a WiFi script you prefer to use.  Just be sure to check for a WiFi connecti
 the OTA.
 
 The GitHub repo needs to be set to the repository the updates will be downloaded from.  The
-repository must have the `main_dir` specified above as that is the data that will be downloaded.
+repository must have the `tgt_dir` specified above as that is the data that will be downloaded.
 
 
 ### Use Tags to Specify the Latest Release
@@ -81,7 +81,7 @@ Below is how the script works.
 ### Checking for Updates
 1. Call the `OTACheck` class and pass in the following arguments
    * 'github_url' - This the URL to the repository you want to download updates from
-   * 'main_dir' - This is the directory that contains the updated code
+   * 'tgt_dir' - This is the directory that contains the updated code
 2. Query GitHub for the latest repo version
 3. If the version is newer than what is on the device
    * Create a `/next/` directory and save the newest version ID in `/next/.version_on_reboot`
@@ -93,7 +93,7 @@ Below is how the script works.
 3. Query GitHub to get the files for that version number
 4. Download all the files into the `/next/` directory
 5. Rename the `/next/.version_on_reboot` file to `/next/.version`
-6. Rename `/next/` directory to the 'main_dir' value
+6. Rename `/next/` directory to the 'tgt_dir' value
 7. _Note: You will need to reboot the device `machine.reboot()` to apply the updates, but this has not been added to the code yet._
 
 

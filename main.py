@@ -18,7 +18,7 @@ def ota_check():
 	if has_wifi:  # If WiFi is connected
 		from assets.ota_check import OTACheck
 		
-		o = OTACheck(github_url, main_dir=main_dir)
+		o = OTACheck(github_url, tgt_dir=main_dir)
 		o.start()  # Check for pending updates
 
 
@@ -31,5 +31,5 @@ def ota_install():
 	if has_wifi:  # If WiFi is connected
 		from assets.ota_download import OTADownload
 		
-		o = OTADownload(github_url, main_dir=main_dir)  # Init OTA
+		o = OTADownload(github_url, tgt_dir=main_dir)  # Init OTA
 		o.start()
