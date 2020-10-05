@@ -32,8 +32,8 @@ ESP8622.
 
 ### TLDR Usage
 1. Specify the Params (see [Setup & Prerequisites section](#setup--prerequisites))
-2. Call `check_for_updates()` in `main.py` to check for new updates
-3. Call `install_updates()` in `main.py` to download and install updates
+2. Call `ota_check()` in `main.py` to check for new updates
+3. Call `ota_install()` in `main.py` to download and install updates
 4. Reboot the device
 
 
