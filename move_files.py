@@ -10,6 +10,9 @@ Move Files
 file_list = {
 	# Files to delete
 	'delete': {
+		'alib\\steve.py': None,
+		'assets\https_requests.py': None,
+		'assets\\steve.py': None,
 		'ota_updater/ota_main.py': None,
 		'project/my_file.txt': None,
 		'test_file.py': None,
@@ -17,6 +20,11 @@ file_list = {
 	
 	# Files to move/override
 	'move': {
+		'assets\\__init__.py': 'assets/__init__.py',
+		'assets\\http_requests.py': 'assets/http_requests.py',
+		'assets\\ota_check.py': 'assets/ota_check.py',
+		'assets\\ota_download.py': 'assets/ota_download.py',
+		'assets\\wifi_conn.py': 'assets/wifi_conn.py',
 		'ota_updater\\__init__.py': 'ota_updater/__init__.py',
 		'ota_updater\\ota_check.py': 'ota_updater/ota_check.py',
 		'ota_updater\\ota_download.py': 'ota_updater/ota_download.py',

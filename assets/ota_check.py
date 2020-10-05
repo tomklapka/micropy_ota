@@ -1,4 +1,4 @@
-from ota_updater.static import HttpClient
+from assets.http_requests import HttpClient
 import os
 
 
@@ -8,7 +8,7 @@ class OTACheck:
 		self.github_repo = github_repo.rstrip('/').replace('https://github.com', 'https://api.github.com/repos')
 		self.main_dir = main_dir
 		self.module = module.rstrip('/')
-		
+	
 	def start(self):
 		current_version = self.get_version(self.modulepath(self.main_dir))
 		latest_version = self.get_latest_version()
@@ -25,7 +25,7 @@ class OTACheck:
 			with open(self.modulepath('next/.version_on_reboot'), 'w') as versionfile:
 				versionfile.write(latest_version)
 				versionfile.close()
-		
+	
 	def get_version(self, directory, version_file_name='.version'):
 		if version_file_name in os.listdir(directory):
 			f = open(directory + '/' + version_file_name)

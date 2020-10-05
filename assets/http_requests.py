@@ -1,6 +1,9 @@
 import usocket
 import gc
 
+"""
+Modified version of urequests
+"""
 
 class Response:
 	def __init__(self, f):
@@ -61,51 +64,56 @@ class HttpClient:
 		ai = ai[0]
 		
 		s = usocket.socket(ai[0], ai[1], ai[2])
-		s.connect(ai[-1])
-		if proto == 'https:':
-			s = ussl.wrap_socket(s, server_hostname=host)
-		s.write(b'%s /%s HTTP/1.0\r\n' % (method, path))
-		if not 'Host' in headers:
-			s.write(b'Host: %s\r\n' % host)
-
-		# Iterate over keys to avoid tuple alloc
-		for k in headers:
-			s.write(k)
+		try:
+			s.connect(ai[-1])
+			if proto == 'https:':
+				s = ussl.wrap_socket(s, server_hostname=host)
+			s.write(b'%s /%s HTTP/1.0\r\n' % (method, path))
+			if not 'Host' in headers:
+				s.write(b'Host: %s\r\n' % host)
+			
+			# Iterate over keys to avoid tuple alloc
+			for k in headers:
+				s.write(k)
+				s.write(b': ')
+				s.write(headers[k])
+				s.write(b'\r\n')
+				
+			# add user agent
+			s.write('User-Agent')
 			s.write(b': ')
-			s.write(headers[k])
+			s.write('MicroPython OTAUpdater')
 			s.write(b'\r\n')
-
-		# add user agent
-		s.write('User-Agent')
-		s.write(b': ')
-		s.write('MicroPython OTAUpdater')
-		s.write(b'\r\n')
-		if json is not None:
-			assert data is None
-			import ujson
-			data = ujson.dumps(json)
-			s.write(b'Content-Type: application/json\r\n')
-		if data:
-			s.write(b'Content-Length: %d\r\n' % len(data))
-		s.write(b'\r\n')
-		if data:
-			s.write(data)
-		
-		l = s.readline()
-		l = l.split(None, 2)
-		status = int(l[1])
-		reason = ''
-		if len(l) > 2:
-			reason = l[2].rstrip()
-		while True:
+			
+			if json is not None:
+				assert data is None
+				import ujson
+				data = ujson.dumps(json)
+				s.write(b'Content-Type: application/json\r\n')
+			if data:
+				s.write(b'Content-Length: %d\r\n' % len(data))
+			s.write(b'\r\n')
+			if data:
+				s.write(data)
+			
 			l = s.readline()
-			if not l or l == b'\r\n':
-				break
-			if l.startswith(b'Transfer-Encoding:'):
-				if b'chunked' in l:
-					raise ValueError('Unsupported ' + l)
-			elif l.startswith(b'Location:') and not 200 <= status <= 299:
-				raise NotImplementedError('Redirects not yet supported')
+			l = l.split(None, 2)
+			status = int(l[1])
+			reason = ''
+			if len(l) > 2:
+				reason = l[2].rstrip()
+			while True:
+				l = s.readline()
+				if not l or l == b'\r\n':
+					break
+				if l.startswith(b'Transfer-Encoding:'):
+					if b'chunked' in l:
+						raise ValueError('Unsupported ' + l)
+				elif l.startswith(b'Location:') and not 200 <= status <= 299:
+					raise NotImplementedError('Redirects not yet supported')
+		except OSError:
+			s.close()
+			raise
 		
 		resp = Response(s)
 		resp.status_code = status
@@ -141,4 +149,3 @@ class HttpClient:
 	
 	def delete(self, url, **kw):
 		return self.request('DELETE', url, **kw)
-		

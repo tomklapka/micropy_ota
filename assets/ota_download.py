@@ -1,4 +1,4 @@
-from ota_updater.static import HttpClient
+from assets.http_requests import HttpClient
 import os
 import gc
 
@@ -9,7 +9,7 @@ class OTADownload:
 		self.github_repo = github_repo.rstrip('/').replace('https://github.com', 'https://api.github.com/repos')
 		self.main_dir = main_dir
 		self.module = module.rstrip('/')
-		
+	
 	def start(self):
 		if 'next' in os.listdir(self.module):
 			if '.version_on_reboot' in os.listdir(self.modulepath('next')):
@@ -52,7 +52,7 @@ class OTADownload:
 				'path': file['path'],
 				'name': file['name'] if 'name' in file else None
 			})
-			
+		
 		del file_list  # Reset/erase data
 		gc.collect()
 		
@@ -70,7 +70,7 @@ class OTADownload:
 					os.mkdir(path)
 					self.download_all_files(root_url + '/' + file_name, version)
 			gc.collect()
-		
+	
 	def download_file(self, url, path):
 		print('\t----- Downloading: ', path)
 		with open(path, 'w') as outfile:
