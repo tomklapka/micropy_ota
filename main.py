@@ -2,7 +2,7 @@ import gc
 from assets.wifi_conn import connect_to_wifi
 
 # Creds
-main_dir = 'project'
+tgt_dir = 'project'
 wifi_ssid = 'magiceye'
 wifi_pass = 'magiceye'
 github_url = 'https://github.com/prowebber/micropy_ota'
@@ -18,7 +18,7 @@ def ota_check():
 	if has_wifi:  # If WiFi is connected
 		from assets.ota_check import OTACheck
 		
-		o = OTACheck(github_url, tgt_dir=main_dir)
+		o = OTACheck(github_url, tgt_dir=tgt_dir)
 		o.start()  # Check for pending updates
 
 
@@ -31,5 +31,5 @@ def ota_install():
 	if has_wifi:  # If WiFi is connected
 		from assets.ota_download import OTADownload
 		
-		o = OTADownload(github_url, tgt_dir=main_dir)  # Init OTA
+		o = OTADownload(github_url, tgt_dir=tgt_dir)  # Init OTA
 		o.start()
