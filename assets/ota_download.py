@@ -1,7 +1,7 @@
 from assets.http_requests import HttpClient
 import os
 import gc
-
+from machine import reboot
 
 class OTADownload:
 	def __init__(self, github_repo, module='', main_dir='project'):
@@ -25,6 +25,7 @@ class OTADownload:
 		os.rename(self.modulepath('next/.version_on_reboot'), self.modulepath('next/.version'))
 		os.rename(self.modulepath('next'), self.modulepath(self.main_dir))
 		print('Update installed (', latest_version, '), will reboot now')
+		reboot()
 	
 	def rmtree(self, directory):
 		for entry in os.ilistdir(directory):
